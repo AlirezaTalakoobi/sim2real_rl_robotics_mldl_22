@@ -58,25 +58,25 @@ class Policy(torch.nn.Module):
 
 
 # The baselineNet used to compute a baseline for the REINFORCE algorithm
-class Baseline(torch.nn.Module):
-    def __init__(self, state_size, hidden_size=256):
-        super().__init__()
-        self.dense_layer_1 = torch.nn.Linear(state_size, hidden_size)
-        self.dense_layer_2 = torch.nn.Linear(hidden_size, hidden_size)
-        self.output = torch.nn.Linear(hidden_size, 1)
+# class Baseline(torch.nn.Module):
+#     def __init__(self, state_size, hidden_size=256):
+#         super().__init__()
+#         self.dense_layer_1 = torch.nn.Linear(state_size, hidden_size)
+#         self.dense_layer_2 = torch.nn.Linear(hidden_size, hidden_size)
+#         self.output = torch.nn.Linear(hidden_size, 1)
 
-    def forward(self, x):
-        x = torch.clamp(x, -1.1, 1.1)
-        x = F.relu(self.dense_layer_1(x))
-        x = F.relu(self.dense_layer_2(x))
-        return self.output(x).squeeze(1)
+#     def forward(self, x):
+#         x = torch.clamp(x, -1.1, 1.1)
+#         x = F.relu(self.dense_layer_1(x))
+#         x = F.relu(self.dense_layer_2(x))
+#         return self.output(x).squeeze(1)
 
 
 class Agent(object):
-    def __init__(self, policy, baseline, device="cpu"):
+    def __init__(self, policy, device="cpu"):
         self.train_device = device
         self.policy = policy.to(self.train_device)
-        self.baseline = baseline.to(self.train_device)
+        # self.baseline = baseline.to(self.train_device)
         self.optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
         # self.bsoptimizer = torch.optim.Adam(baseline.parameters(), lr=1e-3)
 

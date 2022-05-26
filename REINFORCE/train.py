@@ -9,7 +9,7 @@ import gym
 import argparse
 
 from env.custom_hopper import *
-from agent import Agent, Policy, Baseline
+from agent import Agent, Policy
 
 
 def parse_args():
@@ -48,8 +48,8 @@ def main():
     action_space_dim = env.action_space.shape[-1]
 
     policy = Policy(observation_space_dim, action_space_dim)
-    baseline = Baseline(observation_space_dim)
-    agent = Agent(policy, baseline, device=args.device)
+    # baseline = Baseline(observation_space_dim)
+    agent = Agent(policy, device=args.device)
 
     for episode in range(args.n_episodes):
         done = False
