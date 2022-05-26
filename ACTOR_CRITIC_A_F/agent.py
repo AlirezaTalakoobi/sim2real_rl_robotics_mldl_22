@@ -57,7 +57,7 @@ class Policy(torch.nn.Module):
         """
         # TODO 2.2.b: forward in the critic network
         #x_critic = torch.clamp(x, -1.1, 1.1)
-        x_critic = F.relu(self.fc1_critic(x_critic))
+        x_critic = F.relu(self.fc1_critic(x))
         x_critic = F.relu(self.fc2_critic(x_critic))
         value = self.output_critic(x_critic)
 
@@ -87,6 +87,8 @@ class Agent(object):
         done = torch.Tensor(self.done).to(self.train_device)
         values = (torch.stack(self.values, dim=0).to(self.train_device).squeeze(-1)) #
 
+
+
         #
         # TODO 2.2.a:
         #             - compute discounted returns
@@ -106,6 +108,26 @@ class Agent(object):
             discounted_rewards.append(d_r)
 
         discounted_rewards = torch.tensor(discounted_rewards, dtype=torch.float32, device=self.train_device)
+        discounted_rewards = (discounted_rewards - torch.mean(discounted_rewards)) / (torch.std(discounted_rewards))
+        
+        policy_losses = [] # list to save actor (policy) loss
+        value_losses = [] # list to save critic (value) loss
+        
+        for value, R in zip(values, discounted_rewards):
+            advantage = R - value
+
+            # calculate actor (policy) loss 
+            policy_losses.append(-action_log_probs * advantage)
+
+            # calculate critic (value) loss using L1 smooth loss
+            value_losses.append(F.smooth_l1_loss(value, torch.tensor([R])))
+
+        self.optimizer.zero_grad()
+        loss = torch.stack(policy_losses).sum() + torch.stack(value_losses).sum()
+
+        loss.backward()
+        self.optimizer.step()
+
 
         #Could update after x steps and that might help better
         
@@ -115,12 +137,12 @@ class Agent(object):
         #             - compute actor loss and critic loss
         #             - compute gradients and step the optimizer
 
-        with torch.no_grad():
-            advantages = discounted_rewards - values
+        # with torch.no_grad():
+        #     advantages = discounted_rewards - values
             
-        advantages = (advantages-torch.mean(advantages)+1e-12)/torch.std(advantages)
+        # advantages = (advantages-torch.mean(advantages)+1e-12)/torch.std(advantages)
 
-        actor_loss = torch.mean(-action_log_probs*advantages)
+        # actor_loss = torch.mean(-action_log_probs*advantages)
 
         # TODO
         # This is not actor critivs because the advantage is actually baseline estimation and discounted rewards estimation
@@ -129,13 +151,13 @@ class Agent(object):
         # estimated_G_t = R_t + gamma*critic(s_t+1) / G_t = R_t + gamma*(G_t+1)
         # step the critic separatrely from the actor
 
-        critic_loss_fn = torch.nn.MSELoss()
-        critic_loss = critic_loss_fn(values, discounted_rewards)
-        ac_loss = actor_loss + critic_loss + 0.001 * self.entropy_term #Entropy is not something i have to add, understand before implementing
+        # critic_loss_fn = torch.nn.MSELoss()
+        # critic_loss = critic_loss_fn(values, discounted_rewards)
+        # ac_loss = actor_loss + critic_loss + 0.001 * self.entropy_term #Entropy is not something i have to add, understand before implementing
 
-        self.optimizer.zero_grad()
-        ac_loss.backward()
-        self.optimizer.step()
+        # self.optimizer.zero_grad()
+        # ac_loss.backward()
+        # self.optimizer.step()
 
         return
 
