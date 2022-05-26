@@ -78,7 +78,7 @@ class Agent(object):
         self.policy = policy.to(self.train_device)
         self.baseline = baseline.to(self.train_device)
         self.optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
-        self.bsoptimizer = torch.optim.Adam(baseline.parameters(), lr=1e-3)
+        # self.bsoptimizer = torch.optim.Adam(baseline.parameters(), lr=1e-3)
 
         self.gamma = 0.99
         self.states = []
@@ -121,30 +121,30 @@ class Agent(object):
         )
 
         # REINFORCE LOSS
-        # `discounted_rewards = (discounted_rewards - torch.mean(discounted_rewards)) / (torch.std(discounted_rewards))
-        # `policy_gradient = -action_log_probs * discounted_rewards
-        # self.policy.zero_grad()
-        # policy_gradient.sum().backward()
-        # self.optimizer.step()
+        discounted_rewards = (discounted_rewards - torch.mean(discounted_rewards)) / (torch.std(discounted_rewards))
+        policy_gradient = -action_log_probs * discounted_rewards
+        self.policy.zero_grad()
+        policy_gradient.sum().backward()
+        self.optimizer.step()
         
         #Report both on the final table
 
         # REINFORCE BASELINE LOSS
-        dsr_estimates = self.baseline(states).to(self.train_device)
+        # dsr_estimates = self.baseline(states).to(self.train_device)
 
-        with torch.no_grad():
-            advantages = discounted_rewards - dsr_estimates
+        # with torch.no_grad():
+        #     advantages = discounted_rewards - dsr_estimates
 
-        actor_loss = torch.mean(-action_log_probs * advantages)
-        self.optimizer.zero_grad()
-        actor_loss.backward()
-        self.optimizer.step()
+        # actor_loss = torch.mean(-action_log_probs * advantages)
+        # self.optimizer.zero_grad()
+        # actor_loss.backward()
+        # self.optimizer.step()
 
-        baseline_loss_fn = torch.nn.MSELoss()
-        baseline_loss = baseline_loss_fn(dsr_estimates, discounted_rewards)
-        self.bsoptimizer.zero_grad()
-        baseline_loss.backward()
-        self.bsoptimizer.step()
+        # baseline_loss_fn = torch.nn.MSELoss()
+        # baseline_loss = baseline_loss_fn(dsr_estimates, discounted_rewards)
+        # self.bsoptimizer.zero_grad()
+        # baseline_loss.backward()
+        # self.bsoptimizer.step()
 
         #
         # TODO 2.2.b:
