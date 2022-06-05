@@ -73,11 +73,12 @@ class Policy(torch.nn.Module):
 
 
 class Agent(object):
-    def __init__(self, policy, device="cpu"):
+    def __init__(self, policy, device="cpu",lr = 1e-3):
         self.train_device = device
         self.policy = policy.to(self.train_device)
+        self.lr = lr
         # self.baseline = baseline.to(self.train_device)
-        self.optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
+        self.optimizer = torch.optim.Adam(policy.parameters(), self.lr)
         # self.bsoptimizer = torch.optim.Adam(baseline.parameters(), lr=1e-3)
 
         self.gamma = 0.99

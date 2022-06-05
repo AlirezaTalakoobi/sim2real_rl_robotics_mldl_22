@@ -4,7 +4,7 @@ from unittest.mock import Base
 import torch
 import gym
 import argparse
-from stable_baselines3 import PPO
+from stable_baselines import PPO
 
 from env.custom_hopper import *
 from agent import Agent, Policy
@@ -43,9 +43,10 @@ def main():
 		Training
 	"""
 
-    model = PPO('MlpPolicy', env)
+    model = PPO('MlpPolicy',
+     env, tensorboard_log="./a2c_cartpole_tensorboard/")
 
-    model.learn(total_timesteps = 100000)
+    model.learn(total_timesteps = 1000)
 
     model.save("model.mdl")
 
