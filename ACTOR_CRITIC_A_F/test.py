@@ -40,7 +40,9 @@ def main():
     action_space_dim = env.action_space.shape[-1]
 
     policy = Policy(observation_space_dim, action_space_dim)
-    policy.load_state_dict(torch.load(args.model), strict=False)
+    dict = torch.load(args.model)
+    print(f'best model was found at episode' + str(dict['n_episode']))
+    policy.load_state_dict(torch.load(dict['model']), strict=False)
     agent = Agent(policy, device=args.device)
 
     for episode in range(args.episodes):
