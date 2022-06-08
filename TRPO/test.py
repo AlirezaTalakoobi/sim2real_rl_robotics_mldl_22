@@ -3,10 +3,11 @@
 import torch
 import gym
 import argparse
-from stable_baselines3 import PPO
+from sb3_contrib import TRPO
+
 
 from env.custom_hopper import *
-from agent import Agent, Policy
+# from agent import Agent, Policy
 
 
 def parse_args():
@@ -38,7 +39,7 @@ def main():
     print("Dynamics parameters:", env.get_parameters())
 
     
-    model = PPO.load(args.model, env)
+    model = TRPO.load(args.model, env)
     
     for i in range(args.episodes):
         done = False
