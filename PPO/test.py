@@ -37,19 +37,24 @@ def main():
     print("State space:", env.observation_space)
     print("Dynamics parameters:", env.get_parameters())
 
-    obs = env.reset()
     
     model = PPO.load(args.model, env)
     
     for i in range(args.episodes):
-        
-        action, _states = model.predict(obs, deterministic=True)
-        obs, reward, done, info = env.step(action)
-        
-        if args.render == True:
-            env.render()
-        if done:
-            obs = env.reset()
+        done = False
+        test_reward = 0
+        state = env.reset()
+        while not done:
+            action, _ = model.predict(state, deterministic=True)
+            state, reward, done, _ = env.step(action)
+            
+            if args.render == True:
+                env.render()
+            if done:
+                obs = env.reset()
+
+            test_reward += reward
+        print(f'reward at epsiode {i + 1} is: {test_reward}')
 
 
 if __name__ == "__main__":
