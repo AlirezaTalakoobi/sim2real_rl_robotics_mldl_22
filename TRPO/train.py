@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import torch
 import gym
 import argparse
-from stable_baselines3 import PPO
+from sb3_contrib import TRPO
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
 from stable_baselines3.common.monitor import Monitor
@@ -90,7 +90,7 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
     # torch.cuda.set_per_process_memory_fraction(0.7, 0)
 
-    env = gym.make("CustomHopper-target-v0")
+    env = gym.make("CustomHopper-source-v0")
     env = Monitor(env, log_dir)
     # env = gym.make('CustomHopper-target-v0')
 
@@ -102,7 +102,7 @@ def main():
 		Training
 	"""
 
-    model = PPO('MlpPolicy', env,learning_rate = args.lr,device= args.device,tensorboard_log="./a2c_cartpole_tensorboard/")
+    model = TRPO('MlpPolicy', env,learning_rate = args.lr,device= args.device,tensorboard_log="./a2c_cartpole_tensorboard/")
     # Create the callback: check every 1000 steps
     callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
     model.learn(total_timesteps = args.n_timesteps, callback=callback)
@@ -112,7 +112,7 @@ def main():
     from stable_baselines3.common import results_plotter
 
 # Helper from the library
-    results_plotter.plot_results([log_dir], 1e5, results_plotter.X_TIMESTEPS, "PPO CustomHopper")
+    results_plotter.plot_results([log_dir], 1e5, results_plotter.X_TIMESTEPS, "TRPO CustomHopper")
 
 
     def moving_average(values, window):
@@ -143,8 +143,9 @@ def main():
         plt.xlabel('Number of Timesteps')
         plt.ylabel('Rewards')
         plt.title(title + " Smoothed")
-        # plt.show()
-        plt.savefig(f"./{args.lr}.png")
+        print("saved")
+        plt.savefig('TRPO.png')
+        plt.show()
 
     plot_results(log_dir)
 

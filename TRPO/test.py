@@ -3,9 +3,11 @@
 import torch
 import gym
 import argparse
-from stable_baselines3 import PPO
+from sb3_contrib import TRPO
+
 
 from env.custom_hopper import *
+# from agent import Agent, Policy
 
 
 def parse_args():
@@ -37,8 +39,8 @@ def main():
     print("Dynamics parameters:", env.get_parameters())
 
     
-    model = PPO.load(args.model, env)
-    average=0
+    model = TRPO.load(args.model, env)
+    
     for i in range(args.episodes):
         done = False
         test_reward = 0
@@ -53,12 +55,8 @@ def main():
                 obs = env.reset()
 
             test_reward += reward
-        average += test_reward
-        print(f"Episode: {i} | av_Return: {average/i+1}")
-    print(f"average return is: {average/args.episodes}")
-
+        print(f'reward at epsiode {i + 1} is: {test_reward}')
 
 
 if __name__ == "__main__":
     main()
- 
