@@ -30,7 +30,6 @@ class Policy(torch.nn.Module):
         """
         # TODO 2.2.b: critic network for actor-critic algorithm
         self.fc1_critic = torch.nn.Linear(state_space, 256)
-        self.fc2_critic = torch.nn.Linear(256, 256)
         self.output_critic = torch.nn.Linear(256, 1)
 
         self.init_weights()
@@ -45,8 +44,7 @@ class Policy(torch.nn.Module):
         """
         Actor
         """
-        x_actor = self.tanh(self.fc1_actor(x))
-        x_actor = self.tanh(self.fc2_actor(x_actor))
+        x_actor = F.tanh(self.fc1_actor(x))
         action_mean = self.fc3_actor_mean(x_actor)
 
         sigma = self.sigma_activation(self.sigma)
@@ -57,11 +55,9 @@ class Policy(torch.nn.Module):
         """
         # TODO 2.2.b: forward in the critic network
         #x_critic = torch.clamp(x, -1.1, 1.1)
-        x_critic = F.relu(self.fc1_critic(x))
-        x_critic = F.relu(self.fc2_critic(x_critic))
-        value = self.output_critic(x_critic)
+        
 
-        return normal_dist, value
+        return normal_dist
 
 
 class Agent(object):
