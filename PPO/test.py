@@ -6,7 +6,6 @@ import argparse
 from stable_baselines3 import PPO
 
 from env.custom_hopper import *
-from agent import Agent, Policy
 
 
 def parse_args():
@@ -39,7 +38,7 @@ def main():
 
     
     model = PPO.load(args.model, env)
-    
+    average=0
     for i in range(args.episodes):
         done = False
         test_reward = 0
@@ -54,8 +53,12 @@ def main():
                 obs = env.reset()
 
             test_reward += reward
-        print(f'reward at epsiode {i + 1} is: {test_reward}')
+        average += test_reward
+        print(f"Episode: {i} | av_Return: {average/i+1}")
+    print(f"average return is: {average/args.episodes}")
+
 
 
 if __name__ == "__main__":
     main()
+ 

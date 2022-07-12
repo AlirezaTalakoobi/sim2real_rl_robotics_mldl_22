@@ -90,7 +90,7 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
     # torch.cuda.set_per_process_memory_fraction(0.7, 0)
 
-    env = gym.make("CustomHopper-source-v0")
+    env = gym.make("CustomHopper-target-v0")
     env = Monitor(env, log_dir)
     # env = gym.make('CustomHopper-target-v0')
 
@@ -143,7 +143,8 @@ def main():
         plt.xlabel('Number of Timesteps')
         plt.ylabel('Rewards')
         plt.title(title + " Smoothed")
-        plt.show()
+        # plt.show()
+        plt.savefig(f"./{args.lr}.png")
 
     plot_results(log_dir)
 
