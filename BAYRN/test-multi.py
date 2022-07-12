@@ -31,17 +31,17 @@ def main():
     fnames = []
     for file in glob.glob("final_models/*"):
         fnames.append(file)
+
+    with open("results.txt", "a") as f:  
+        f.write("MODELNAME,REWARD\n")
         
     for modelname in fnames:
         obs = env.reset()
         totalreward = 0
         allrewards = []
         model = TRPO.load(modelname, env)
-
-        with open("results.txt", "a") as f:  
-            f.write("MODELNAME,REWARD\n")
         
-        for i in range(100):
+        for i in range(500):
             done = False
             while not done:
                 action, _states = model.predict(obs, deterministic=True)

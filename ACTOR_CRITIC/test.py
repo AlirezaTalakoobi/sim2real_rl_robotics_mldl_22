@@ -18,7 +18,7 @@ def parse_args():
         "--render", default=False, action="store_true", help="Render the simulator"
     )
     parser.add_argument(
-        "--episodes", default=10, type=int, help="Number of test episodes"
+        "--episodes", default=100, type=int, help="Number of test episodes"
     )
 
     return parser.parse_args()
@@ -29,7 +29,7 @@ args = parse_args()
 
 def main():
 
-    env = gym.make("CustomHopper-source-v0")
+    env = gym.make("CustomHopper-target-v0")
     # env = gym.make('CustomHopper-target-v0')
 
     print("Action space:", env.action_space)
@@ -42,7 +42,7 @@ def main():
     policy = Policy(observation_space_dim, action_space_dim)
     dict = torch.load(args.model)
     print(f'best model was found at episode' + str(dict['n_episode']))
-    policy.load_state_dict(torch.load(dict['model']), strict=False)
+    policy.load_state_dict(dict['model'], strict=False)
     agent = Agent(policy, device=args.device)
 
     for episode in range(args.episodes):
@@ -61,6 +61,8 @@ def main():
 
             test_reward += reward
 
+        with open("results2.txt", "a") as f:  
+            f.write(f"ACTOR_CRITIC,{test_reward}\n")
         print(f"Episode: {episode} | Return: {test_reward}")
 
 

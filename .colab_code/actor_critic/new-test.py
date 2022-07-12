@@ -23,7 +23,7 @@ def parse_args():
         "--render", default=False, action="store_true", help="Render the simulator"
     )
     parser.add_argument(
-        "--episodes", default=10, type=int, help="Number of test episodes"
+        "--episodes", default=100, type=int, help="Number of test episodes"
     )
 
     return parser.parse_args()
@@ -130,6 +130,8 @@ def main():
 
             test_reward += reward
             if done:
+                with open("results2.txt", "a") as f:  
+                    f.write(f"ACTOR_CRITIC,{test_reward}\n")
                 break
         total_test_reward +=test_reward
         print(f"Episode: {i_episode} | Return: {total_test_reward/(i_episode+1)}")
