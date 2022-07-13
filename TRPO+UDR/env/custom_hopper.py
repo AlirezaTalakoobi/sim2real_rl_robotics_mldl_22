@@ -17,7 +17,8 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
         self.original_masses = np.copy(self.sim.model.body_mass[1:])    # Default link masses
         self.domain = domain
-        self.uniforms = [uniform(3.4,4.5), uniform(2.5,3.5), uniform(4.5,5.5)]
+        #self.uniforms = [uniform(3.4,4.5), uniform(2.5,3.5), uniform(4.5,5.5)]
+        self.uniforms = [uniform(1,7), uniform(0.1,6), uniform(2,8)]
 
         if domain == 'source':  # Source environment has an imprecise torso mass (1kg shift)
             self.sim.model.body_mass[1] -= 1.0
