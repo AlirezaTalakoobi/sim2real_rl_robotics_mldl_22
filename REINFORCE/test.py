@@ -15,7 +15,7 @@ def parse_args():
                         help='network device [cpu, cuda]')
     parser.add_argument('--render', default=False,
                         action='store_true', help='Render the simulator')
-    parser.add_argument('--episodes', default=100, type=int,
+    parser.add_argument('--episodes', default=10, type=int,
                         help='Number of test episodes')
 
     return parser.parse_args()
@@ -37,12 +37,12 @@ def main():
     action_space_dim = env.action_space.shape[-1]
 
     policy = Policy(observation_space_dim, action_space_dim)
-    dict = torch.load(args.model)
+    dict = torch.load(args.model, map_location=args.device)
     print(f'best model was found at episode' + str(dict['n_episode']))
     policy.load_state_dict(dict['model'], strict=False)
     # baseline = Baseline(observation_space_dim)
     agent = Agent(policy, device=args.device)
-
+    average = 0
     for episode in range(args.episodes):
         done = False
         test_reward = 0
@@ -58,11 +58,9 @@ def main():
                 env.render()
 
             test_reward += reward
-
-        with open("results2.txt", "a") as f:  
-            f.write(f"REINFORCE,{test_reward}\n")
-
-        print(f"Episode: {episode} | Return: {test_reward}")
+        average += test_reward
+        print(f"Episode: {episode} | av_Return: {average/episode+1}")
+    print(f"average return is: {average/args.episodes}")
 
 
 if __name__ == '__main__':
