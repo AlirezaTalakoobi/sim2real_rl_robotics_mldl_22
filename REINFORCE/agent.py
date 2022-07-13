@@ -70,7 +70,7 @@ class Agent(object):
             total_rewards[timestep] = discounted_reward
         total_rewards = (total_rewards - total_rewards.mean())/total_rewards.std()
 
-        for i in range(rewards):
+        for i in range(len(action_log_probs)):
             policy_loss.append(-1 * action_log_probs[i] * total_rewards[i])
 
         self.optimizer.zero_grad()
