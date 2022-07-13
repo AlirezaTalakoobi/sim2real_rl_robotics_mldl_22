@@ -1,5 +1,6 @@
 """Test an RL agent on the OpenAI Gym Hopper environment"""
 
+from statistics import mean
 import torch
 import gym
 import argparse
@@ -40,6 +41,8 @@ def main():
 
     
     model = TRPO.load(args.model, env)
+
+    allrewards = []
     
     for i in range(args.episodes):
         done = False
@@ -55,8 +58,11 @@ def main():
                 obs = env.reset()
 
             test_reward += reward
+
+        allrewards.append(test_reward)
+
         print(f'reward at epsiode {i + 1} is: {test_reward}')
 
-
+    print(f"average return:{mean(allrewards)}")
 if __name__ == "__main__":
     main()
